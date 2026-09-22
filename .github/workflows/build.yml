@@ -18,8 +18,7 @@ jobs:
           echo "$CRICKETTRACK_ZIP_B64" | base64 -d > CricketTrackV2.zip
           echo "ZIP SHA256: 99878dde3a3ea7814bcd1cd74c04a7917f1eb7f22d11ae391ce33a50f565f879"
           unzip -q CricketTrackV2.zip -d build_project
-
-            - name: Set up JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
