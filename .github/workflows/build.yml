@@ -1,523 +1,425 @@
-name: Build CricketTrack V2 APK
+package com.crickettrack.app
 
-on:
-  workflow_dispatch:
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            CricketTrackTheme {
+                CricketTrackApp()
+            }
+        }
+    }
+}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+@Composable
+fun CricketTrackApp() {
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
-      # =========================================================
-      # 1. Recreate Project & Setup App Code
-      # =========================================================
-      - name: Recreate CricketTrack Project
-        run: |
-          set -e
-          rm -rf build_project
-          mkdir -p build_project/app/src/main/java/com/crickettrack/app
-          mkdir -p build_project/app/src/main/res/values
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    icon = { Icon(Icons.Default.SportsCricket, contentDescription = "Training") },
+                    label = { Text("Training") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    icon = { Icon(Icons.Default.EmojiEvents, contentDescription = "Progress") },
+                    label = { Text("Progress") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 },
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                    label = { Text("Profile") }
+                )
+            }
+        }
+    ) { padding ->
+        when (selectedTab) {
+            0 -> HomeScreen(modifier = Modifier.padding(padding))
+            1 -> TrainingScreen(modifier = Modifier.padding(padding))
+            2 -> ProgressScreen(modifier = Modifier.padding(padding))
+            3 -> ProfileScreen(modifier = Modifier.padding(padding))
+        }
+    }
+}
 
-          # Strings XML
-          cat << 'EOF' > build_project/app/src/main/res/values/strings.xml
-          <resources>
-              <string name="app_name">CricketTrack Pro</string>
-          </resources>
-          EOF
+@Composable
+fun HomeScreen(modifier: Modifier = Modifier) {
+    var showIQ by remember { mutableStateOf(false) }
 
-          # AndroidManifest.xml
-          cat << 'EOF' > build_project/app/src/main/AndroidManifest.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application
-                  android:allowBackup="true"
-                  android:icon="@android:drawable/sym_def_app_icon"
-                  android:label="@string/app_name"
-                  android:roundIcon="@android:drawable/sym_def_app_icon"
-                  android:supportsRtl="true"
-                  android:theme="@android:style/Theme.Material.NoActionBar">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
-              </application>
-          </manifest>
-          EOF
+    var warmUpDone by rememberSaveable { mutableStateOf(true) }
+    var battingDone by rememberSaveable { mutableStateOf(false) }
+    var fieldingDone by rememberSaveable { mutableStateOf(false) }
+    var fitnessDone by rememberSaveable { mutableStateOf(false) }
 
-          # MainActivity.kt
-          cat << 'EOF' > build_project/app/src/main/java/com/crickettrack/app/MainActivity.kt
-          package com.crickettrack.app
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 18.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Good Morning 👋", fontSize = 15.sp, color = Color.Gray)
+                    Text("Cricket Player", fontSize = 27.sp, fontWeight = FontWeight.Bold)
+                }
+                Surface(
+                    modifier = Modifier.size(52.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Person, contentDescription = "Profile", modifier = Modifier.size(30.dp))
+                    }
+                }
+            }
+        }
 
-          import android.os.Bundle
-          import androidx.activity.ComponentActivity
-          import androidx.activity.compose.setContent
-          import androidx.compose.foundation.background
-          import androidx.compose.foundation.layout.*
-          import androidx.compose.foundation.lazy.LazyColumn
-          import androidx.compose.foundation.lazy.items
-          import androidx.compose.foundation.shape.RoundedCornerShape
-          import androidx.compose.material.icons.Icons
-          import androidx.compose.material.icons.filled.*
-          import androidx.compose.material3.*
-          import androidx.compose.runtime.*
-          import androidx.compose.ui.Alignment
-          import androidx.compose.ui.Modifier
-          import androidx.compose.ui.graphics.Color
-          import androidx.compose.ui.text.font.FontWeight
-          import androidx.compose.ui.unit.dp
-          import androidx.compose.ui.unit.sp
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Today's Progress", color = Color.White, fontSize = 16.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("65%", color = Color.White, fontSize = 34.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    LinearProgressIndicator(
+                        progress = { 0.65f },
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.White,
+                        trackColor = Color.White.copy(alpha = 0.3f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Keep going. Your consistency matters!", color = Color.White.copy(alpha = 0.9f))
+                }
+            }
+        }
 
-          data class DrillTask(val id: Int, val title: String, val category: String, val duration: String, var isDone: Boolean = false)
-          data class DailyQuiz(val question: String, val options: List<String>, val correctIndex: Int, val explanation: String)
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                StatCard(modifier = Modifier.weight(1f), icon = "🔥", value = "7", label = "Day Streak")
+                StatCard(modifier = Modifier.weight(1f), icon = "⏱️", value = "6.2h", label = "This Week")
+            }
+        }
 
-          class MainActivity : ComponentActivity() {
-              override fun onCreate(savedInstanceState: Bundle?) {
-                  super.onCreate(savedInstanceState)
-                  setContent {
-                      CricketAppTheme {
-                          CricketAppMainScreen()
-                      }
-                  }
-              }
-          }
+        item {
+            Text("Today's Training", fontSize = 21.sp, fontWeight = FontWeight.Bold)
+        }
 
-          @Composable
-          fun CricketAppTheme(content: @Composable () -> Unit) {
-              val darkColors = darkColorScheme(
-                  primary = Color(0xFF10B981),
-                  secondary = Color(0xFFF59E0B),
-                  background = Color(0xFF0F172A),
-                  surface = Color(0xFF1E293B),
-                  onPrimary = Color.Black,
-                  onBackground = Color.White,
-                  onSurface = Color.White
-              )
-              MaterialTheme(colorScheme = darkColors, content = content)
-          }
+        item { TrainingItem("🏃", "Warm-up & Mobility", warmUpDone) { warmUpDone = it } }
+        item { TrainingItem("🏏", "Batting Practice", battingDone) { battingDone = it } }
+        item { TrainingItem("🧤", "Fielding Practice", fieldingDone) { fieldingDone = it } }
+        item { TrainingItem("💪", "Fitness & Strength", fitnessDone) { fitnessDone = it } }
 
-          @Composable
-          fun CricketAppMainScreen() {
-              var selectedTab by remember { mutableStateOf(0) }
-              val tabs = listOf("Dashboard", "Drills", "Warmup", "Notes")
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showIQ = true },
+                shape = RoundedCornerShape(22.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("🧠 DAILY CRICKET IQ", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Test your cricket knowledge every day.", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Tap to answer today's question →", color = Color.Gray)
+                }
+            }
+        }
 
-              Scaffold(
-                  bottomBar = {
-                      NavigationBar(containerColor = Color(0xFF1E293B)) {
-                          tabs.forEachIndexed { index, title ->
-                              val icon = when (index) {
-                                  0 -> Icons.Default.Home
-                                  1 -> Icons.Default.SportsCricket
-                                  2 -> Icons.Default.FitnessCenter
-                                  else -> Icons.Default.EditNote
-                              }
-                              NavigationBarItem(
-                                  selected = selectedTab == index,
-                                  onClick = { selectedTab = index },
-                                  label = { Text(title, fontSize = 11.sp) },
-                                  icon = { Icon(icon, contentDescription = title) },
-                                  colors = NavigationBarItemDefaults.colors(
-                                      selectedIconColor = Color(0xFF10B981),
-                                      selectedTextColor = Color(0xFF10B981),
-                                      unselectedIconColor = Color.Gray,
-                                      unselectedTextColor = Color.Gray,
-                                      indicatorColor = Color(0xFF0F172A)
-                                  )
-                              )
-                          }
-                      }
-                  }
-              ) { padding ->
-                  Box(
-                      modifier = Modifier
-                          .fillMaxSize()
-                          .background(Color(0xFF0F172A))
-                          .padding(padding)
-                          .padding(16.dp)
-                  ) {
-                      when (selectedTab) {
-                          0 -> DashboardScreen()
-                          1 -> DrillsScreen()
-                          2 -> WarmupScreen()
-                          3 -> NotesScreen()
-                      }
-                  }
-              }
-          }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(22.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("📝 Daily Journal", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text("Record what you practiced today.", color = Color.Gray)
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Button(onClick = {}) {
+                        Text("Add Today's Note")
+                    }
+                }
+            }
+        }
 
-          @Composable
-          fun DashboardScreen() {
-              val quiz = remember {
-                  DailyQuiz(
-                      question = "Agar ball boundary line ke upar field ho aur fielder ground touch kare, to kya hoga?",
-                      options = listOf("Six Runs", "Four Runs", "Dead Ball", "Not Out"),
-                      correctIndex = 0,
-                      explanation = "Air me boundary rope ke paar ball capture hone par 6 runs award hote hain."
-                  )
-              }
-              var selectedOption by remember { mutableStateOf<Int?>(null) }
+        item { Spacer(modifier = Modifier.height(20.dp)) }
+    }
 
-              LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                  item {
-                      Text("CricketTrack Pro", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
-                      Text("Train Smart. Play Better.", fontSize = 13.sp, color = Color.Gray)
-                  }
+    if (showIQ) {
+        DailyIQDialog(onDismiss = { showIQ = false })
+    }
+}
 
-                  item {
-                      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                          Card(
-                              modifier = Modifier.weight(1f),
-                              shape = RoundedCornerShape(14.dp),
-                              colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                          ) {
-                              Column(modifier = Modifier.padding(14.dp)) {
-                                  Text("🔥 Practice Streak", fontSize = 12.sp, color = Color.Gray)
-                                  Spacer(modifier = Modifier.height(6.dp))
-                                  Text("7 Days", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFFF59E0B))
-                              }
-                          }
-                          Card(
-                              modifier = Modifier.weight(1f),
-                              shape = RoundedCornerShape(14.dp),
-                              colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                          ) {
-                              Column(modifier = Modifier.padding(14.dp)) {
-                                  Text("⏱️ Weekly Hours", fontSize = 12.sp, color = Color.Gray)
-                                  Spacer(modifier = Modifier.height(6.dp))
-                                  Text("14.5 hrs", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
-                              }
-                          }
-                      }
-                  }
+@Composable
+fun StatCard(
+    modifier: Modifier,
+    icon: String,
+    value: String,
+    label: String
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(icon, fontSize = 24.sp)
+            Spacer(modifier = Modifier.height(5.dp))
+            Text(value, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(label, color = Color.Gray, fontSize = 13.sp)
+        }
+    }
+}
 
-                  item {
-                      Card(
-                          modifier = Modifier.fillMaxWidth(),
-                          shape = RoundedCornerShape(16.dp),
-                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                      ) {
-                          Column(modifier = Modifier.padding(16.dp)) {
-                              Row(verticalAlignment = Alignment.CenterVertically) {
-                                  Text("🏏 Daily Cricket IQ", fontWeight = FontWeight.Bold, color = Color(0xFFF59E0B), fontSize = 15.sp)
-                                  Spacer(modifier = Modifier.weight(1f))
-                                  Text("+10 XP", color = Color(0xFF10B981), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                              }
-                              Spacer(modifier = Modifier.height(8.dp))
-                              Text(quiz.question, color = Color.White, fontSize = 14.sp)
-                              Spacer(modifier = Modifier.height(10.dp))
-                              quiz.options.forEachIndexed { idx, opt ->
-                                  val btnColor = when {
-                                      selectedOption == null -> Color(0xFF334155)
-                                      idx == quiz.correctIndex -> Color(0xFF10B981)
-                                      selectedOption == idx -> Color(0xFFEF4444)
-                                      else -> Color(0xFF334155)
-                                  }
-                                  Button(
-                                      onClick = { if (selectedOption == null) selectedOption = idx },
-                                      modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
-                                      colors = ButtonDefaults.buttonColors(containerColor = btnColor),
-                                      shape = RoundedCornerShape(8.dp)
-                                  ) {
-                                      Text(opt, color = Color.White, fontSize = 13.sp)
-                                  }
-                              }
-                              if (selectedOption != null) {
-                                  Spacer(modifier = Modifier.height(8.dp))
-                                  Text(quiz.explanation, color = Color.LightGray, fontSize = 12.sp)
-                              }
-                          }
-                      }
-                  }
-              }
-          }
+@Composable
+fun TrainingItem(
+    icon: String,
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = icon, fontSize = 25.sp)
+            Spacer(modifier = Modifier.width(14.dp))
+            Text(text = title, modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+        }
+    }
+}
 
-          @Composable
-          fun DrillsScreen() {
-              var drills by remember {
-                  mutableStateOf(
-                      listOf(
-                          DrillTask(1, "Front Foot Drive Drill (50 balls)", "Batting", "20 mins"),
-                          DrillTask(2, "Short Ball Pull Drill", "Batting", "15 mins"),
-                          DrillTask(3, "Good Length Target Bowling (6 overs)", "Bowling", "25 mins"),
-                          DrillTask(4, "Yorker Cone Drill (3 overs)", "Bowling", "15 mins"),
-                          DrillTask(5, "Direct Hit Practice (20 throws)", "Fielding", "15 mins"),
-                          DrillTask(6, "High Catch Boundary Drill", "Fielding", "10 mins")
-                      )
-                  )
-              }
+@Composable
+fun DailyIQDialog(onDismiss: () -> Unit) {
+    var selected by remember { mutableIntStateOf(-1) }
+    var submitted by remember { mutableStateOf(false) }
 
-              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                  item {
-                      Text("Daily Practice Routine", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                      Text("Mark completed drills as you finish", fontSize = 12.sp, color = Color.Gray)
-                      Spacer(modifier = Modifier.height(4.dp))
-                  }
-                  items(drills) { drill ->
-                      Card(
-                          modifier = Modifier.fillMaxWidth(),
-                          shape = RoundedCornerShape(12.dp),
-                          colors = CardDefaults.cardColors(containerColor = if (drill.isDone) Color(0xFF1E3A2F) else Color(0xFF1E293B))
-                      ) {
-                          Row(
-                              modifier = Modifier.padding(14.dp),
-                              verticalAlignment = Alignment.CenterVertically
-                          ) {
-                              Checkbox(
-                                  checked = drill.isDone,
-                                  onCheckedChange = { checked ->
-                                      drills = drills.map { if (it.id == drill.id) it.copy(isDone = checked) else it }
-                                  },
-                                  colors = CheckboxDefaults.colors(checkedColor = Color(0xFF10B981))
-                              )
-                              Spacer(modifier = Modifier.width(8.dp))
-                              Column(modifier = Modifier.weight(1f)) {
-                                  Text(drill.title, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 14.sp)
-                                  Text("${drill.category} • ${drill.duration}", color = Color.Gray, fontSize = 12.sp)
-                              }
-                          }
-                      }
-                  }
-              }
-          }
+    val options = listOf(
+        "Play a defensive shot",
+        "Take a risky big shot",
+        "Leave the ball",
+        "Run down the pitch"
+    )
 
-          @Composable
-          fun WarmupScreen() {
-              val warmups = listOf(
-                  "Pre-Practice Dynamic Warm-up (Arm Circles, Hamstring Sweeps, High Knees)",
-                  "Sprint Intervals (20m sprints between wickets x 6 reps)",
-                  "Post-Session Lower Back & Hamstring Stretching",
-                  "Shoulder Mobility with Resistance Band",
-                  "Ice Bath / Foam Rolling for Recovery"
-              )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("🧠 Daily Cricket IQ", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                Text("Your team needs 12 runs from the last over. What should a smart batter focus on?", fontWeight = FontWeight.SemiBold)
+                Spacer(modifier = Modifier.height(12.dp))
+                options.forEachIndexed { index, option ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { if (!submitted) selected = index }
+                            .padding(vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(selected = selected == index, onClick = { if (!submitted) selected = index })
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(option)
+                    }
+                }
 
-              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                  item {
-                      Text("Fitness & Stretching Hub", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                      Text("Stay injury free and improve agility", fontSize = 12.sp, color = Color.Gray)
-                      Spacer(modifier = Modifier.height(4.dp))
-                  }
-                  items(warmups) { routine ->
-                      Card(
-                          modifier = Modifier.fillMaxWidth(),
-                          shape = RoundedCornerShape(12.dp),
-                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                      ) {
-                          Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                              Icon(Icons.Default.CheckCircleOutline, contentDescription = null, tint = Color(0xFF10B981))
-                              Spacer(modifier = Modifier.width(10.dp))
-                              Text(routine, color = Color.White, fontSize = 13.sp)
-                          }
-                      }
-                  }
-              }
-          }
+                if (submitted) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = if (selected == 1) "Correct! 🎉 Smart shot selection can maximize the scoring opportunity."
+                        else "Keep learning! Think about the match situation and scoring options.",
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (submitted) onDismiss() else if (selected >= 0) submitted = true
+                }
+            ) {
+                Text(if (submitted) "Done" else "Submit")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Close") }
+        }
+    )
+}
 
-          @Composable
-          fun NotesScreen() {
-              var noteText by remember { mutableStateOf("") }
-              var notesList by remember {
-                  mutableStateOf(
-                      listOf(
-                          "22 Sep: Focus on head position during cover drives. Head fell over on full balls.",
-                          "21 Sep: Bowled 7 overs with good bounce. Yorker release point was consistent."
-                      )
-                  )
-              }
+@Composable
+fun TrainingScreen(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(20.dp)
+    ) {
+        Text("Training", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text("Build your game every day.", color = Color.Gray)
+        Spacer(modifier = Modifier.height(20.dp))
 
-              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                  item {
-                      Text("Training Diary & Notes", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                      Text("Write what you learned in today's nets", fontSize = 12.sp, color = Color.Gray)
-                      Spacer(modifier = Modifier.height(4.dp))
-                  }
-                  item {
-                      OutlinedTextField(
-                          value = noteText,
-                          onValueChange = { noteText = it },
-                          label = { Text("Log today's session feedback...", color = Color.Gray) },
-                          modifier = Modifier.fillMaxWidth(),
-                          colors = OutlinedTextFieldDefaults.colors(
-                              focusedBorderColor = Color(0xFF10B981),
-                              unfocusedBorderColor = Color(0xFF334155),
-                              focusedTextColor = Color.White,
-                              unfocusedTextColor = Color.White
-                          )
-                      )
-                      Spacer(modifier = Modifier.height(8.dp))
-                      Button(
-                          onClick = {
-                              if (noteText.isNotBlank()) {
-                                  notesList = listOf("Today: $noteText") + notesList
-                                  noteText = ""
-                              }
-                          },
-                          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
-                          shape = RoundedCornerShape(8.dp),
-                          modifier = Modifier.fillMaxWidth()
-                      ) {
-                          Text("Save Daily Note", color = Color.Black, fontWeight = FontWeight.Bold)
-                      }
-                  }
-                  items(notesList) { itemNote ->
-                      Card(
-                          modifier = Modifier.fillMaxWidth(),
-                          shape = RoundedCornerShape(10.dp),
-                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
-                      ) {
-                          Text(itemNote, color = Color.LightGray, fontSize = 13.sp, modifier = Modifier.padding(14.dp))
-                      }
-                  }
-              }
-          }
-          EOF
+        listOf(
+            "🏏" to "Batting Practice",
+            "🎯" to "Bowling Practice",
+            "🧤" to "Fielding Practice",
+            "💪" to "Fitness & Strength",
+            "🧠" to "Mental Training",
+            "🧘" to "Recovery & Stretching"
+        ).forEach { (icon, title) ->
+            var done by rememberSaveable { mutableStateOf(false) }
+            TrainingItem(icon, title, done) { done = it }
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }
+}
 
-      # =========================================================
-      # 2. Java 17 Setup
-      # =========================================================
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+@Composable
+fun ProgressScreen(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(20.dp)
+    ) {
+        Text("Your Progress", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Text("Track your improvement over time.", color = Color.Gray)
+        Spacer(modifier = Modifier.height(25.dp))
 
-      # =========================================================
-      # 3. Android SDK Setup
-      # =========================================================
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          accept-android-sdk-licenses: true
-          log-accepted-android-sdk-licenses: false
+        StatCard(modifier = Modifier.fillMaxWidth(), icon = "🔥", value = "7 Days", label = "Current Training Streak")
+        Spacer(modifier = Modifier.height(12.dp))
+        StatCard(modifier = Modifier.fillMaxWidth(), icon = "🏏", value = "8 Sessions", label = "Training Sessions")
+        Spacer(modifier = Modifier.height(12.dp))
+        StatCard(modifier = Modifier.fillMaxWidth(), icon = "⏱️", value = "6.2 Hours", label = "Weekly Practice")
+    }
+}
 
-      - name: Install Android SDK packages
-        run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager \
-            "platform-tools" \
-            "platforms;android-35" \
-            "build-tools;35.0.0"
+@Composable
+fun ProfileScreen(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(20.dp)
+    ) {
+        Text("Profile", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+        Spacer(modifier = Modifier.height(25.dp))
 
-      # =========================================================
-      # 4. Generate Gradle Build Files & Properties
-      # =========================================================
-      - name: Configure Gradle scripts
-        working-directory: build_project
-        run: |
-          # Enable AndroidX in properties
-          cat << 'EOF' > gradle.properties
-          android.useAndroidX=true
-          android.nonTransitiveRClass=true
-          org.gradle.jvmargs=-Xmx2048m
-          EOF
+        Surface(
+            modifier = Modifier.size(100.dp),
+            shape = RoundedCornerShape(30.dp),
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(55.dp))
+            }
+        }
 
-          cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "CricketTrack"
-          include(":app")
-          EOF
+        Spacer(modifier = Modifier.height(20.dp))
+        Text("Player Name", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text("All-Rounder • Beginner", color = Color.Gray)
 
-          cat << 'EOF' > build.gradle.kts
-          plugins {
-              id("com.android.application") version "8.7.2" apply false
-              id("org.jetbrains.kotlin.android") version "2.0.20" apply false
-              id("org.jetbrains.kotlin.plugin.compose") version "2.0.20" apply false
-          }
-          EOF
+        Spacer(modifier = Modifier.height(25.dp))
+        listOf(
+            "👤" to "Edit Profile",
+            "🏏" to "Playing Role",
+            "🎯" to "Training Goals",
+            "🔔" to "Notifications",
+            "⚙️" to "Settings"
+        ).forEach { (icon, title) ->
+            ProfileRow(icon, title) { /* Handle navigation */ }
+        }
+    }
+}
 
-          cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
-              id("org.jetbrains.kotlin.plugin.compose")
-          }
+@Composable
+fun ProfileRow(icon: String, title: String, onClick: () -> Unit = {}) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(17.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(icon, fontSize = 22.sp)
+            Spacer(modifier = Modifier.width(14.dp))
+            Text(title, fontSize = 16.sp)
+            Spacer(modifier = Modifier.weight(1f))
+            Text("›", fontSize = 25.sp)
+        }
+    }
+}
 
-          android {
-              namespace = "com.crickettrack.app"
-              compileSdk = 35
-
-              defaultConfig {
-                  applicationId = "com.crickettrack.app"
-                  minSdk = 24
-                  targetSdk = 35
-                  versionCode = 2
-                  versionName = "2.0"
-              }
-
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-
-              buildFeatures {
-                  compose = true
-              }
-          }
-
-          dependencies {
-              val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
-              implementation(composeBom)
-
-              implementation("androidx.core:core-ktx:1.13.1")
-              implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
-              implementation("androidx.activity:activity-compose:1.9.2")
-
-              implementation("androidx.compose.ui:ui")
-              implementation("androidx.compose.ui:ui-graphics")
-              implementation("androidx.compose.ui:ui-tooling-preview")
-              implementation("androidx.compose.material3:material3")
-              implementation("androidx.compose.material:material-icons-extended")
-          }
-          EOF
-
-      # =========================================================
-      # 5. Build Gradle Wrapper & APK
-      # =========================================================
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.11.1'
-
-      - name: Build CricketTrack V2 APK
-        working-directory: build_project
-        run: |
-          gradle wrapper --gradle-version 8.11.1 --distribution-type bin
-          chmod +x gradlew
-          ./gradlew clean assembleDebug --no-daemon
-
-      # =========================================================
-      # 6. Upload APK Artifact
-      # =========================================================
-      - name: Upload CricketTrack V2 APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: CricketTrack-V2-Pro-APK
-          path: build_project/app/build/outputs/apk/debug/app-debug.apk
+@Composable
+fun CricketTrackTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = lightColorScheme(
+            primary = Color(0xFF0B7A3B),
+            secondary = Color(0xFFFFB300),
+            background = Color(0xFFF7F9F7)
+        ),
+        content = content
+    )
+}
