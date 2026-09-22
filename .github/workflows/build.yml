@@ -404,11 +404,18 @@ jobs:
             "build-tools;35.0.0"
 
       # =========================================================
-      # 4. Generate Gradle Build Files
+      # 4. Generate Gradle Build Files & Properties
       # =========================================================
       - name: Configure Gradle scripts
         working-directory: build_project
         run: |
+          # Enable AndroidX in properties
+          cat << 'EOF' > gradle.properties
+          android.useAndroidX=true
+          android.nonTransitiveRClass=true
+          org.gradle.jvmargs=-Xmx2048m
+          EOF
+
           cat << 'EOF' > settings.gradle.kts
           pluginManagement {
               repositories {
