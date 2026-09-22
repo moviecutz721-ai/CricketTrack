@@ -12,121 +12,365 @@ jobs:
         uses: actions/checkout@v4
 
       # =========================================================
-      # 1. Recreate CricketTrack project from Base64 ZIP
+      # 1. Recreate Project & Setup App Code
       # =========================================================
-      - name: Recreate CricketTrack V2 project
-        env:
-          CRICKETTRACK_ZIP_B64: |
-            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
-
+      - name: Recreate CricketTrack Project
         run: |
           set -e
-          echo "Decoding CricketTrack ZIP..."
-          printf '%s' "$CRICKETTRACK_ZIP_B64" | base64 --decode > CricketTrackV2.zip
-
-          echo "Extracting project..."
           rm -rf build_project
-          mkdir -p build_project
-          unzip -q CricketTrackV2.zip -d build_project
+          mkdir -p build_project/app/src/main/java/com/crickettrack/app
+          mkdir -p build_project/app/src/main/res/values
 
-          # Fix MainActivity.kt directly with a clean, working implementation
+          # Strings XML
+          cat << 'EOF' > build_project/app/src/main/res/values/strings.xml
+          <resources>
+              <string name="app_name">CricketTrack Pro</string>
+          </resources>
+          EOF
+
+          # AndroidManifest.xml
+          cat << 'EOF' > build_project/app/src/main/AndroidManifest.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:allowBackup="true"
+                  android:icon="@android:drawable/sym_def_app_icon"
+                  android:label="@string/app_name"
+                  android:roundIcon="@android:drawable/sym_def_app_icon"
+                  android:supportsRtl="true"
+                  android:theme="@android:style/Theme.Material.NoActionBar">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          # MainActivity.kt
           cat << 'EOF' > build_project/app/src/main/java/com/crickettrack/app/MainActivity.kt
           package com.crickettrack.app
 
           import android.os.Bundle
           import androidx.activity.ComponentActivity
           import androidx.activity.compose.setContent
+          import androidx.compose.foundation.background
           import androidx.compose.foundation.layout.*
           import androidx.compose.foundation.lazy.LazyColumn
           import androidx.compose.foundation.lazy.items
+          import androidx.compose.foundation.shape.RoundedCornerShape
           import androidx.compose.material.icons.Icons
-          import androidx.compose.material.icons.filled.Add
+          import androidx.compose.material.icons.filled.*
           import androidx.compose.material3.*
           import androidx.compose.runtime.*
           import androidx.compose.ui.Alignment
           import androidx.compose.ui.Modifier
+          import androidx.compose.ui.graphics.Color
+          import androidx.compose.ui.text.font.FontWeight
           import androidx.compose.ui.unit.dp
+          import androidx.compose.ui.unit.sp
 
-          data class CricketMatch(
-              val id: Int,
-              val teamA: String,
-              val teamB: String,
-              val score: Int,
-              val wickets: Int,
-              val overs: Double
-          )
+          data class DrillTask(val id: Int, val title: String, val category: String, val duration: String, var isDone: Boolean = false)
+          data class DailyQuiz(val question: String, val options: List<String>, val correctIndex: Int, val explanation: String)
 
           class MainActivity : ComponentActivity() {
               override fun onCreate(savedInstanceState: Bundle?) {
                   super.onCreate(savedInstanceState)
                   setContent {
-                      MaterialTheme {
-                          Surface(
-                              modifier = Modifier.fillMaxSize(),
-                              color = MaterialTheme.colorScheme.background
+                      CricketAppTheme {
+                          CricketAppMainScreen()
+                      }
+                  }
+              }
+          }
+
+          @Composable
+          fun CricketAppTheme(content: @Composable () -> Unit) {
+              val darkColors = darkColorScheme(
+                  primary = Color(0xFF10B981),
+                  secondary = Color(0xFFF59E0B),
+                  background = Color(0xFF0F172A),
+                  surface = Color(0xFF1E293B),
+                  onPrimary = Color.Black,
+                  onBackground = Color.White,
+                  onSurface = Color.White
+              )
+              MaterialTheme(colorScheme = darkColors, content = content)
+          }
+
+          @Composable
+          fun CricketAppMainScreen() {
+              var selectedTab by remember { mutableStateOf(0) }
+              val tabs = listOf("Dashboard", "Drills", "Warmup", "Notes")
+
+              Scaffold(
+                  bottomBar = {
+                      NavigationBar(containerColor = Color(0xFF1E293B)) {
+                          tabs.forEachIndexed { index, title ->
+                              val icon = when (index) {
+                                  0 -> Icons.Default.Home
+                                  1 -> Icons.Default.SportsCricket
+                                  2 -> Icons.Default.FitnessCenter
+                                  else -> Icons.Default.EditNote
+                              }
+                              NavigationBarItem(
+                                  selected = selectedTab == index,
+                                  onClick = { selectedTab = index },
+                                  label = { Text(title, fontSize = 11.sp) },
+                                  icon = { Icon(icon, contentDescription = title) },
+                                  colors = NavigationBarItemDefaults.colors(
+                                      selectedIconColor = Color(0xFF10B981),
+                                      selectedTextColor = Color(0xFF10B981),
+                                      unselectedIconColor = Color.Gray,
+                                      unselectedTextColor = Color.Gray,
+                                      indicatorColor = Color(0xFF0F172A)
+                                  )
+                              )
+                          }
+                      }
+                  }
+              ) { padding ->
+                  Box(
+                      modifier = Modifier
+                          .fillMaxSize()
+                          .background(Color(0xFF0F172A))
+                          .padding(padding)
+                          .padding(16.dp)
+                  ) {
+                      when (selectedTab) {
+                          0 -> DashboardScreen()
+                          1 -> DrillsScreen()
+                          2 -> WarmupScreen()
+                          3 -> NotesScreen()
+                      }
+                  }
+              }
+          }
+
+          @Composable
+          fun DashboardScreen() {
+              val quiz = remember {
+                  DailyQuiz(
+                      question = "Agar ball boundary line ke upar field ho aur fielder ground touch kare, to kya hoga?",
+                      options = listOf("Six Runs", "Four Runs", "Dead Ball", "Not Out"),
+                      correctIndex = 0,
+                      explanation = "Air me boundary rope ke paar ball capture hone par 6 runs award hote hain."
+                  )
+              }
+              var selectedOption by remember { mutableStateOf<Int?>(null) }
+
+              LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                  item {
+                      Text("CricketTrack Pro", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                      Text("Train Smart. Play Better.", fontSize = 13.sp, color = Color.Gray)
+                  }
+
+                  item {
+                      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                          Card(
+                              modifier = Modifier.weight(1f),
+                              shape = RoundedCornerShape(14.dp),
+                              colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
                           ) {
-                              CricketApp()
+                              Column(modifier = Modifier.padding(14.dp)) {
+                                  Text("🔥 Practice Streak", fontSize = 12.sp, color = Color.Gray)
+                                  Spacer(modifier = Modifier.height(6.dp))
+                                  Text("7 Days", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFFF59E0B))
+                              }
+                          }
+                          Card(
+                              modifier = Modifier.weight(1f),
+                              shape = RoundedCornerShape(14.dp),
+                              colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                          ) {
+                              Column(modifier = Modifier.padding(14.dp)) {
+                                  Text("⏱️ Weekly Hours", fontSize = 12.sp, color = Color.Gray)
+                                  Spacer(modifier = Modifier.height(6.dp))
+                                  Text("14.5 hrs", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                              }
+                          }
+                      }
+                  }
+
+                  item {
+                      Card(
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(16.dp),
+                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                      ) {
+                          Column(modifier = Modifier.padding(16.dp)) {
+                              Row(verticalAlignment = Alignment.CenterVertically) {
+                                  Text("🏏 Daily Cricket IQ", fontWeight = FontWeight.Bold, color = Color(0xFFF59E0B), fontSize = 15.sp)
+                                  Spacer(modifier = Modifier.weight(1f))
+                                  Text("+10 XP", color = Color(0xFF10B981), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                              }
+                              Spacer(modifier = Modifier.height(8.dp))
+                              Text(quiz.question, color = Color.White, fontSize = 14.sp)
+                              Spacer(modifier = Modifier.height(10.dp))
+                              quiz.options.forEachIndexed { idx, opt ->
+                                  val btnColor = when {
+                                      selectedOption == null -> Color(0xFF334155)
+                                      idx == quiz.correctIndex -> Color(0xFF10B981)
+                                      selectedOption == idx -> Color(0xFFEF4444)
+                                      else -> Color(0xFF334155)
+                                  }
+                                  Button(
+                                      onClick = { if (selectedOption == null) selectedOption = idx },
+                                      modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                                      colors = ButtonDefaults.buttonColors(containerColor = btnColor),
+                                      shape = RoundedCornerShape(8.dp)
+                                  ) {
+                                      Text(opt, color = Color.White, fontSize = 13.sp)
+                                  }
+                              }
+                              if (selectedOption != null) {
+                                  Spacer(modifier = Modifier.height(8.dp))
+                                  Text(quiz.explanation, color = Color.LightGray, fontSize = 12.sp)
+                              }
                           }
                       }
                   }
               }
           }
 
-          @OptIn(ExperimentalMaterial3Api::class)
           @Composable
-          fun CricketApp() {
-              var matches by remember {
+          fun DrillsScreen() {
+              var drills by remember {
                   mutableStateOf(
                       listOf(
-                          CricketMatch(1, "India", "Australia", 185, 4, 20.0),
-                          CricketMatch(2, "England", "South Africa", 160, 6, 19.4)
+                          DrillTask(1, "Front Foot Drive Drill (50 balls)", "Batting", "20 mins"),
+                          DrillTask(2, "Short Ball Pull Drill", "Batting", "15 mins"),
+                          DrillTask(3, "Good Length Target Bowling (6 overs)", "Bowling", "25 mins"),
+                          DrillTask(4, "Yorker Cone Drill (3 overs)", "Bowling", "15 mins"),
+                          DrillTask(5, "Direct Hit Practice (20 throws)", "Fielding", "15 mins"),
+                          DrillTask(6, "High Catch Boundary Drill", "Fielding", "10 mins")
                       )
                   )
               }
 
-              Scaffold(
-                  topBar = {
-                      TopAppBar(
-                          title = { Text("CricketTrack") },
-                          colors = TopAppBarDefaults.topAppBarColors(
-                              containerColor = MaterialTheme.colorScheme.primaryContainer,
-                              titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                          )
-                      )
-                  },
-                  floatingActionButton = {
-                      FloatingActionButton(onClick = {
-                          val nextId = (matches.maxOfOrNull { it.id } ?: 0) + 1
-                          matches = matches + CricketMatch(nextId, "Team $nextId", "Opponent", 0, 0, 0.0)
-                      }) {
-                          Icon(Icons.Default.Add, contentDescription = "Add Match")
-                      }
+              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                  item {
+                      Text("Daily Practice Routine", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                      Text("Mark completed drills as you finish", fontSize = 12.sp, color = Color.Gray)
+                      Spacer(modifier = Modifier.height(4.dp))
                   }
-              ) { paddingValues ->
-                  LazyColumn(
-                      modifier = Modifier
-                          .fillMaxSize()
-                          .padding(paddingValues)
-                          .padding(16.dp),
-                      verticalArrangement = Arrangement.spacedBy(8.dp)
-                  ) {
-                      items(matches) { match ->
-                          Card(
-                              modifier = Modifier.fillMaxWidth(),
-                              elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                  items(drills) { drill ->
+                      Card(
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(12.dp),
+                          colors = CardDefaults.cardColors(containerColor = if (drill.isDone) Color(0xFF1E3A2F) else Color(0xFF1E293B))
+                      ) {
+                          Row(
+                              modifier = Modifier.padding(14.dp),
+                              verticalAlignment = Alignment.CenterVertically
                           ) {
-                              Column(modifier = Modifier.padding(16.dp)) {
-                                  Text(
-                                      text = "${match.teamA} vs ${match.teamB}",
-                                      style = MaterialTheme.typography.titleMedium
-                                  )
-                                  Spacer(modifier = Modifier.height(4.dp))
-                                  Text(
-                                      text = "Score: ${match.score.toString()}/${match.wickets} in ${match.overs} ov",
-                                      style = MaterialTheme.typography.bodyMedium
-                                  )
+                              Checkbox(
+                                  checked = drill.isDone,
+                                  onCheckedChange = { checked ->
+                                      drills = drills.map { if (it.id == drill.id) it.copy(isDone = checked) else it }
+                                  },
+                                  colors = CheckboxDefaults.colors(checkedColor = Color(0xFF10B981))
+                              )
+                              Spacer(modifier = Modifier.width(8.dp))
+                              Column(modifier = Modifier.weight(1f)) {
+                                  Text(drill.title, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 14.sp)
+                                  Text("${drill.category} • ${drill.duration}", color = Color.Gray, fontSize = 12.sp)
                               }
                           }
+                      }
+                  }
+              }
+          }
+
+          @Composable
+          fun WarmupScreen() {
+              val warmups = listOf(
+                  "Pre-Practice Dynamic Warm-up (Arm Circles, Hamstring Sweeps, High Knees)",
+                  "Sprint Intervals (20m sprints between wickets x 6 reps)",
+                  "Post-Session Lower Back & Hamstring Stretching",
+                  "Shoulder Mobility with Resistance Band",
+                  "Ice Bath / Foam Rolling for Recovery"
+              )
+
+              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                  item {
+                      Text("Fitness & Stretching Hub", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                      Text("Stay injury free and improve agility", fontSize = 12.sp, color = Color.Gray)
+                      Spacer(modifier = Modifier.height(4.dp))
+                  }
+                  items(warmups) { routine ->
+                      Card(
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(12.dp),
+                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                      ) {
+                          Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                              Icon(Icons.Default.CheckCircleOutline, contentDescription = null, tint = Color(0xFF10B981))
+                              Spacer(modifier = Modifier.width(10.dp))
+                              Text(routine, color = Color.White, fontSize = 13.sp)
+                          }
+                      }
+                  }
+              }
+          }
+
+          @Composable
+          fun NotesScreen() {
+              var noteText by remember { mutableStateOf("") }
+              var notesList by remember {
+                  mutableStateOf(
+                      listOf(
+                          "22 Sep: Focus on head position during cover drives. Head fell over on full balls.",
+                          "21 Sep: Bowled 7 overs with good bounce. Yorker release point was consistent."
+                      )
+                  )
+              }
+
+              LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                  item {
+                      Text("Training Diary & Notes", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                      Text("Write what you learned in today's nets", fontSize = 12.sp, color = Color.Gray)
+                      Spacer(modifier = Modifier.height(4.dp))
+                  }
+                  item {
+                      OutlinedTextField(
+                          value = noteText,
+                          onValueChange = { noteText = it },
+                          label = { Text("Log today's session feedback...", color = Color.Gray) },
+                          modifier = Modifier.fillMaxWidth(),
+                          colors = OutlinedTextFieldDefaults.colors(
+                              focusedBorderColor = Color(0xFF10B981),
+                              unfocusedBorderColor = Color(0xFF334155),
+                              focusedTextColor = Color.White,
+                              unfocusedTextColor = Color.White
+                          )
+                      )
+                      Spacer(modifier = Modifier.height(8.dp))
+                      Button(
+                          onClick = {
+                              if (noteText.isNotBlank()) {
+                                  notesList = listOf("Today: $noteText") + notesList
+                                  noteText = ""
+                              }
+                          },
+                          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                          shape = RoundedCornerShape(8.dp),
+                          modifier = Modifier.fillMaxWidth()
+                      ) {
+                          Text("Save Daily Note", color = Color.Black, fontWeight = FontWeight.Bold)
+                      }
+                  }
+                  items(notesList) { itemNote ->
+                      Card(
+                          modifier = Modifier.fillMaxWidth(),
+                          shape = RoundedCornerShape(10.dp),
+                          colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                      ) {
+                          Text(itemNote, color = Color.LightGray, fontSize = 13.sp, modifier = Modifier.padding(14.dp))
                       }
                   }
               }
@@ -134,7 +378,7 @@ jobs:
           EOF
 
       # =========================================================
-      # 2. Java 17
+      # 2. Java 17 Setup
       # =========================================================
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -143,7 +387,7 @@ jobs:
           java-version: '17'
 
       # =========================================================
-      # 3. Android SDK
+      # 3. Android SDK Setup
       # =========================================================
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
@@ -160,12 +404,30 @@ jobs:
             "build-tools;35.0.0"
 
       # =========================================================
-      # 4. Generate Valid build.gradle.kts (Kotlin 2.0 Compose Support)
+      # 4. Generate Gradle Build Files
       # =========================================================
-      - name: Fix and configure Gradle scripts
+      - name: Configure Gradle scripts
         working-directory: build_project
         run: |
-          # Root build.gradle.kts
+          cat << 'EOF' > settings.gradle.kts
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = "CricketTrack"
+          include(":app")
+          EOF
+
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.7.2" apply false
@@ -174,7 +436,6 @@ jobs:
           }
           EOF
 
-          # App build.gradle.kts
           cat << 'EOF' > app/build.gradle.kts
           plugins {
               id("com.android.application")
@@ -190,19 +451,13 @@ jobs:
                   applicationId = "com.crickettrack.app"
                   minSdk = 24
                   targetSdk = 35
-                  versionCode = 1
-                  versionName = "1.0"
-
-                  testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                  versionCode = 2
+                  versionName = "2.0"
               }
 
               buildTypes {
                   release {
                       isMinifyEnabled = false
-                      proguardFiles(
-                          getDefaultProguardFile("proguard-android-optimize.txt"),
-                          "proguard-rules.pro"
-                      )
                   }
               }
 
@@ -228,68 +483,34 @@ jobs:
               implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
               implementation("androidx.activity:activity-compose:1.9.2")
 
-              // Compose UI & Material 3
               implementation("androidx.compose.ui:ui")
               implementation("androidx.compose.ui:ui-graphics")
               implementation("androidx.compose.ui:ui-tooling-preview")
               implementation("androidx.compose.material3:material3")
               implementation("androidx.compose.material:material-icons-extended")
-
-              implementation("androidx.appcompat:appcompat:1.7.0")
           }
           EOF
 
       # =========================================================
-      # 5. Install Gradle
+      # 5. Build Gradle Wrapper & APK
       # =========================================================
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.11.1'
 
-      # =========================================================
-      # 6. Generate Gradle Wrapper
-      # =========================================================
-      - name: Generate Gradle wrapper
+      - name: Build CricketTrack V2 APK
         working-directory: build_project
         run: |
-          set -e
           gradle wrapper --gradle-version 8.11.1 --distribution-type bin
           chmod +x gradlew
+          ./gradlew clean assembleDebug --no-daemon
 
       # =========================================================
-      # 7. Clean project
-      # =========================================================
-      - name: Clean project
-        working-directory: build_project
-        run: |
-          ./gradlew clean --no-daemon
-
-      # =========================================================
-      # 8. Build Debug APK
-      # =========================================================
-      - name: Build CricketTrack V2 Debug APK
-        working-directory: build_project
-        run: |
-          ./gradlew assembleDebug --stacktrace --no-daemon
-
-      # =========================================================
-      # 9. Check APK
-      # =========================================================
-      - name: Verify APK exists
-        working-directory: build_project
-        run: |
-          echo "Searching for APK..."
-          find app/build/outputs -type f -name "*.apk" -print
-          test -f app/build/outputs/apk/debug/app-debug.apk
-
-      # =========================================================
-      # 10. Upload APK
+      # 6. Upload APK Artifact
       # =========================================================
       - name: Upload CricketTrack V2 APK
         uses: actions/upload-artifact@v4
         with:
-          name: CricketTrack-V2-debug-APK
+          name: CricketTrack-V2-Pro-APK
           path: build_project/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          
