@@ -29,6 +29,9 @@ jobs:
           mkdir -p build_project
           unzip -q CricketTrackV2.zip -d build_project
 
+          # Fix line 101: match.score (Int) to match.score.toString() (String)
+          sed -i 's/Text(match\.score,/Text(match.score.toString(),/g' build_project/app/src/main/java/com/crickettrack/app/MainActivity.kt
+
       # =========================================================
       # 2. Java 17
       # =========================================================
